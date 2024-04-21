@@ -36,7 +36,7 @@ bool changeActiveTimeFlag = false; // Boolean flag to indicate that the player c
 bool activeTime = false; // boolean to see wich player counter is active: player0 = false , player1 = true
 
 
-void setupInitialClockConfig(long initialTime_0=3000, long initialTime_1=3000, long increment=3000);
+void setupInitialClockConfig(long initialTime_0=300000, long initialTime_1=300000, long increment=3000);
 
 void setup() {
   // put your setup code here, to run once:
@@ -92,7 +92,7 @@ void initLCD() {
   // Simple initial print function
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
-  lcd.print("best chess clock");
+  lcd.print("GoJu Chess Clock");
   delay(1500);
   //lcd.clear();
 }
@@ -103,7 +103,7 @@ void enterPlayRoutine (){
   previousPlayRoutineFlag = playRoutineFlag;
 }
 
-void setupInitialClockConfig (long initialTime_0=3000, long initialTime_1=3000, long increment=3000){
+void setupInitialClockConfig (long initialTime_0=300000, long initialTime_1=300000, long increment=3000){
   // Starts both players time counters and increments with the default or provided times
   actualTime_0 = initialTime_0;
   actualTime_1 = initialTime_1;
@@ -120,11 +120,9 @@ void checkForLoss() {
     lcd.clear();
     // iF active time pointer value is equal or minor than zero, verify wich player lost and prints it
     if (activeTime) {
-      Serial.println("Player 1 is a LOOOOOOOSER!");
-      lcd.print("player 1 loser");
+      lcd.print(" WINNER | LOSER");
     } else {
-      Serial.println("Player 0 is a LOOOOOOOSER!");
-      lcd.print("player 2 looser");
+      lcd.print(" LOSER | WINNER");
     }
     // Put the time as 0 to not display a negative value and stops the game
     *activeTimePointer = 0;
@@ -169,13 +167,8 @@ void printStatistics(){
   float actualTime_0_seconds = actualTime_0 / 1000.0; // Convert to seconds
   float actualTime_1_seconds = actualTime_1 / 1000.0; // Convert to seconds
   lcd.setCursor(0, 1);
-  Serial.print("Time 0: "); Serial.print(actualTime_0_seconds, 2); Serial.print("s ");
-  lcd.print(actualTime_0_seconds);
-  //lcd.clear();
-  Serial.print("| Time 1: "); Serial.print(actualTime_1_seconds, 2); Serial.print("s |");
-  lcd.print(" | "); lcd.print(actualTime_1_seconds);
-  //lcd.clear();
-  Serial.print("Increment: "); Serial.print(activeIncrement / 1000.0, 2); Serial.println("s");
+  conversiontime(actualTime_0_seconds);
+  lcd.print("/"); conversiontime(actualTime_1_seconds);
 }
 
 void startStopInterrupt() {
@@ -186,4 +179,21 @@ void startStopInterrupt() {
 void changeActiveTimeInterrupt() {
   // Indicates tha the active time counter must be switched
   changeActiveTimeFlag = true;
+}
+
+void conversiontime(long timeInS){
+  int hours = timeInS / 3600;
+  int minutes = timeInS % 3600 / 60;
+  int seconds = timeInS % 3600 % 60;
+  lcd.print(hours);
+  lcd.print(":");
+  if(minutes < 10){
+    lcd.print("0");
+  }
+  lcd.print(minutes);
+  lcd.print(":");
+  if(seconds < 10){
+    lcd.print("0");
+  }
+  lcd.print(seconds);
 }
